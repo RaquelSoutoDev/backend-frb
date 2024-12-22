@@ -10,6 +10,15 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false },
 });
 
+const verPartidos = async () => {
+    const query = 'SELECT * FROM partidos';
+    const result = await pool.query(query);
+    return result.rows; 
+};
+
+module.exports = { pool, crearPartido, verPartidos };
+
+
 const crearPartido = async (partido) => {
     const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado  } = partido;
 
@@ -30,4 +39,4 @@ const crearPartido = async (partido) => {
     return result.rows[0];
 };
 
-module.exports = {pool, crearPartido};
+module.exports = {pool, crearPartido, verPartidos};

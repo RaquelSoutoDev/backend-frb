@@ -1,10 +1,20 @@
 const express = require('express');
-const { crearPartido }= require('./db');
+const { crearPartido, verPartidos }= require('./db');
 require('dotenv').config();
 
 const app = express();
 
 app.use(express.json());
+
+app.get('/partidos', async (req, res) => {
+    try {
+        const partidos = await verPartidos(); 
+        res.json(partidos); 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error del servidor');
+    }
+});
 
 app.post('/partidos', async (req, res) => {
     try{
