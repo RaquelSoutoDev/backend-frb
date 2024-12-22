@@ -10,33 +10,33 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false },
 });
 
-const verPartidos = async () => {
-    const query = 'SELECT * FROM partidos';
-    const result = await pool.query(query);
-    return result.rows; 
-};
-
-module.exports = { pool, crearPartido, verPartidos };
-
 
 const crearPartido = async (partido) => {
-    const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado  } = partido;
+    const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado } = partido;
 
-    if(!equipo_1 || !equipo_2 || !fecha || !estado) {
+    if (!equipo_1 || !equipo_2 || !fecha || !estado) {
         throw new Error('Faltan datos obligatorios');
     }
 
     const estadosPermitidos = ['Jugado', 'Pendiente', 'Pospuesto', 'Cancelado'];
 
     if (!estadosPermitidos.includes(estado)) {
-        throw new Error(`Estado inválido. Los estados permitidos son: ${estadosPermitidos.join(', ')}`)
+        throw new Error(`Estado inválido. Los estados permitidos son: ${estadosPermitidos.join(', ')}`);
     }
 
     const query = `INSERT INTO partidos (equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
     const values = [equipo_1, equipo_2, resultado_equipo_1 || null, resultado_equipo_2 || null, fecha, estado];
-    
+
     const result = await pool.query(query, values);
     return result.rows[0];
 };
 
-module.exports = {pool, crearPartido, verPartidos};
+
+const verPartidos = async () => {
+    const query = 'SELECT * FROM partidos';
+    const result = await pool.query(query);
+    return result.rows; 
+};
+
+
+module.exports = { pool, crearPartido, verPartidos };
