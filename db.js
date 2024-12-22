@@ -20,7 +20,7 @@ const crearPartido = async (partido) => {
     const estadosPermitidos = ['Jugado', 'Pendiente', 'Pospuesto', 'Cancelado'];
 
     if (!estadosPermitidos.includes(estado)) {
-        throw new Error(`Estado inválido. Los estados permitidos son: ¢{estadosPermitidos.join(', ')}`)
+        throw new Error(`Estado inválido. Los estados permitidos son: ${estadosPermitidos.join(', ')}`)
     }
 
     const query = `INSERT INTO partidos (equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
