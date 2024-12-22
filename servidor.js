@@ -6,7 +6,7 @@ const app = express();
 
 app.use(express.json());
 
-app.post('/partidos', async (requestAnimationFrame, res) => {
+app.post('/partidos', async (req, res) => {
     try{
         const nuevoPartido = await crearPartido(req.body);
         res.status(201).json(nuevoPartido);
