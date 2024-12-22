@@ -1,5 +1,5 @@
 const express = require('express');
-const { crearPartido, verPartidos }= require('./db');
+const { crearPartido, verPartidos, eliminarPartido }= require('./db');
 require('dotenv').config();
 
 const app = express();
@@ -25,6 +25,18 @@ app.post('/partidos', async (req, res) => {
         res.status(400).send(err.message);
     }
 })
+
+app.delete('/partidos/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const mensaje = await eliminarPartido(id);
+        res.status(200).send(mensaje);
+    } catch (err) {
+        console.error(err.message);
+        res.status(404).send(err.message);
+    }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
