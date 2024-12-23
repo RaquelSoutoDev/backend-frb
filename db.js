@@ -14,8 +14,13 @@ const pool = new Pool({
 const crearPartido = async (partido) => {
     const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido } = partido;
 
-    if (!equipo_1 || !equipo_2 || !fecha || !estado) {
+    if (!equipo_1 || !equipo_2 || !fecha || !estado || !tipo_partido) {
         throw new Error('Faltan datos obligatorios');
+    }
+
+
+    if (isNaN(Date.parse(fecha))) {
+        throw new Error('Formato de fecha inválido');
     }
 
     const estadosPermitidos = ['Jugado', 'Pendiente', 'Pospuesto', 'Cancelado'];
@@ -24,19 +29,17 @@ const crearPartido = async (partido) => {
     }
 
     const tiposPermitidos = ['Amistoso', 'Liga-IMD', 'Torneo'];
-    if (tipo_partido && !tiposPermitidos.includes(tipo_partido)) {
+    if (!tiposPermitidos.includes(tipo_partido)) {
         throw new Error(`Tipo de partido inválido. Los tipos permitidos son: ${tiposPermitidos.join(', ')}`);
     }
 
-    const query = `
-        INSERT INTO partidos (equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *`;
-    const values = [equipo_1, equipo_2, resultado_equipo_1 || null, resultado_equipo_2 || null, fecha, estado, tipo_partido || 'Amistoso'];
-
+    const query = `INSERT INTO partidos (equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido) 
+                   VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
+    const values = [equipo_1, equipo_2, resultado_equipo_1 || null, resultado_equipo_2 || null, fecha, estado, tipo_partido];
     const result = await pool.query(query, values);
     return result.rows[0];
 };
+
 
 
 
