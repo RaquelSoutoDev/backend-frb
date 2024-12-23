@@ -57,5 +57,42 @@ const eliminarPartido = async (id) => {
     return `El partido con ID ${id} fue eliminado existosamente`;
 }
 
+const editarPartido = async (id, partido) => {
+    const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido } = partido;
 
-module.exports = { pool, crearPartido, verPartidos, eliminarPartido };
+    const estadosPermitidos = ['Jugado', 'Pendiente', 'Pospuesto', 'Cancelado'];
+    const tiposPermitidos = ['Amistoso', 'Liga-IMD', 'Torneo'];
+
+    if (estado && !estadosPermitidos.includes(estado)) {
+        throw new Error(`Estado inválido. Los estados permitidos son: ${estadosPermitidos.join(', ')}`);
+    }
+
+    if (tipo_partido && !tiposPermitidos.includes(tipo_partido)) {
+        throw new Error (`Tipo de partido inválido. Los tipos permitidos son: ${tiposPermitidos.join(', ')}`);
+    }
+
+    const query = `
+        UPDATE partidos
+        SET
+            equipo_1 = COALESCE($1, equipo_1),
+            equipo_2 = COALESCE($2, equipo_2),
+            resultado_equipo_1 = COALESCE($3, resultado_equipo_1),
+            resultado_equipo_2 = COALESCE($4, resultado_equipo_2),
+            fecha = COALESCE($5, fecha),
+            estado = COALESCE($6, estado),
+            tipo_partido = COALESCE($7, tipo_partido)
+        WHERE id = $8
+        RETURNING *;    
+    `;
+    const values = [equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido, id];
+    const result = await pool.query(query, values);
+
+    if (result.rowCount === 0) {
+        throw new Error(`Partido con ID ${id} no encontrado`);
+    }
+
+    return result.rows[0];
+}
+
+
+module.exports = { pool, crearPartido, verPartidos, eliminarPartido,editarPartido };

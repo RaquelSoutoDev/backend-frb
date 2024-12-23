@@ -1,5 +1,5 @@
 const express = require('express');
-const { crearPartido, verPartidos, eliminarPartido }= require('./db');
+const { crearPartido, verPartidos, eliminarPartido, editarPartido } = require('./db');
 require('dotenv').config();
 
 const app = express();
@@ -35,6 +35,18 @@ app.delete('/partidos/:id', async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(404).send(err.message);
+    }
+});
+
+app.put('/partidos/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const partidoActualizado = await editarPartido(id, req.body);
+        res.status(200).json(partidoActualizado);
+    } catch (err) {
+        console.error(err.message);
+        res.status(400).send(err.message);
     }
 });
 
