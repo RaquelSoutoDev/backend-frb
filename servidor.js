@@ -1,10 +1,13 @@
 const express = require('express');
+const cors = require('cors');
 const { crearPartido, verPartidos, eliminarPartido, editarPartido } = require('./db');
 require('dotenv').config();
 
 const app = express();
 
 app.use(express.json());
+
+app.use(cors());
 
 app.get('/partidos', async (req, res) => {
     try {
