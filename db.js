@@ -12,18 +12,18 @@ const pool = new Pool({
 
 // Crear un partido
 const crearPartido = async (partido) => {
-  const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido } = partido;
+  const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido, ubicacion } = partido;
 
-  if (!equipo_1 || !equipo_2 || !fecha || !estado || !tipo_partido) {
+  if (!equipo_1 || !equipo_2 || !fecha || !estado || !tipo_partido || !ubicacion) {
     throw new Error("Faltan datos obligatorios");
   }
 
   const query = `
     INSERT INTO partidos (equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     RETURNING *;
   `;
-  const values = [equipo_1, equipo_2, resultado_equipo_1 || null, resultado_equipo_2 || null, fecha, estado, tipo_partido];
+  const values = [equipo_1, equipo_2, resultado_equipo_1 || null, resultado_equipo_2 || null, fecha, estado, tipo_partido, ubicacion];
   const result = await pool.query(query, values);
 
   return result.rows[0];
@@ -38,7 +38,7 @@ const verPartidos = async () => {
 
 // Editar partido
 const editarPartido = async (id, partido) => {
-  const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido } = partido;
+  const { equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido, ubicacion } = partido;
 
   const query = `
     UPDATE partidos
@@ -49,11 +49,12 @@ const editarPartido = async (id, partido) => {
       resultado_equipo_2 = COALESCE($4, resultado_equipo_2),
       fecha = COALESCE($5, fecha),
       estado = COALESCE($6, estado),
-      tipo_partido = COALESCE($7, tipo_partido)
-    WHERE id = $8
+      tipo_partido = COALESCE($7, tipo_partido),
+      ubicacion = COALESCE($8, ubicacion)
+    WHERE id = $9
     RETURNING *;
   `;
-  const values = [equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido, id];
+  const values = [equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido, ubicacion, id];
   const result = await pool.query(query, values);
 
   if (result.rowCount === 0) {
