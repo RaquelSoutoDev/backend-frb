@@ -31,7 +31,7 @@ const crearPartido = async (partido) => {
 
 // Ver partidos
 const verPartidos = async () => {
-  const query = "SELECT * FROM partidos ORDER BY fecha DESC";
+  const query = "SELECT * FROM partidos ORDER BY fecha ASC";
   const result = await pool.query(query);
   return result.rows;
 };
