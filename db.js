@@ -79,4 +79,4 @@ const eliminarPartido = async (id) => {
   return { message: "Partido eliminado con éxito" };
 };
 
-module.exports = { pool, crearPartido, verPartidos, editarPartido };
+module.exports = { pool, crearPartido, verPartidos, editarPartido, eliminarPartido };
