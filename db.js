@@ -64,4 +64,19 @@ const editarPartido = async (id, partido) => {
   return result.rows[0];
 };
 
+//Eliminar partido
+const eliminarPartido = async (id) => {
+  const query = `
+    DELETE FROM partidos WHERE id = $1
+  `;
+  const values = [id];
+  const result = await pool.query(query, values);
+
+  if (result.rowCount === 0) {
+    throw new Error(`No se encontró un partido con el ID: ${id}`);
+  }
+
+  return { message: "Partido eliminado con éxito" };
+};
+
 module.exports = { pool, crearPartido, verPartidos, editarPartido };
