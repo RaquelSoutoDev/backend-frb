@@ -19,10 +19,10 @@ const crearPartido = async (partido) => {
   }
 
   const query = `
-    INSERT INTO partidos (equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    RETURNING *;
-  `;
+  INSERT INTO partidos (equipo_1, equipo_2, resultado_equipo_1, resultado_equipo_2, fecha, estado, tipo_partido, ubicacion)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  RETURNING *;
+`;
   const values = [equipo_1, equipo_2, resultado_equipo_1 || null, resultado_equipo_2 || null, fecha, estado, tipo_partido, ubicacion];
   const result = await pool.query(query, values);
 
