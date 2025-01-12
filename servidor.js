@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const nodemailer = require("nodemailer"); // Añadido Nodemailer
+const nodemailer = require("nodemailer");
+const axios = require("axios");
 const { crearPartido, verPartidos, eliminarPartido, editarPartido } = require("./db");
 require("dotenv").config();
 
@@ -10,15 +11,42 @@ app.use(express.json());
 app.use(cors());
 
 const transporter = nodemailer.createTransport({
-  service: "gmail", 
+  service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER, 
-    pass: process.env.EMAIL_PASS, 
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
+const verificarCaptcha = async (token) => {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  const url = `https://www.google.com/recaptcha/api/siteverify`;
+
+  try {
+    const response = await axios.post(url, null, {
+      params: {
+        secret: secretKey,
+        response: token,
+      },
+    });
+
+    return response.data.success; // Devuelve true si la verificación es exitosa
+  } catch (error) {
+    console.error("Error al verificar reCAPTCHA:", error);
+    return false;
+  }
+};
+
+// Endpoint para manejar contacto
 app.post("/contacto", async (req, res) => {
-  const { nombre, email, mensaje } = req.body;
+  const { nombre, email, mensaje, captchaToken } = req.body;
+
+  // Verificar el token de reCAPTCHA
+  const captchaValid = await verificarCaptcha(captchaToken);
+
+  if (!captchaValid) {
+    return res.status(400).send("Error: Fallo en la verificación de reCAPTCHA.");
+  }
 
   const mailOptions = {
     from: email,
@@ -36,6 +64,7 @@ app.post("/contacto", async (req, res) => {
   }
 });
 
+// Otros endpoints existentes
 app.get("/partidos", async (req, res) => {
   try {
     const partidos = await verPartidos();
