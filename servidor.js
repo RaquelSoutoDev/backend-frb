@@ -30,18 +30,16 @@ const verificarCaptcha = async (token) => {
       },
     });
 
-    return response.data.success; // Devuelve true si la verificación es exitosa
+    return response.data.success; 
   } catch (error) {
     console.error("Error al verificar reCAPTCHA:", error);
     return false;
   }
 };
 
-// Endpoint para manejar contacto
 app.post("/contacto", async (req, res) => {
   const { nombre, email, mensaje, captchaToken } = req.body;
 
-  // Verificar el token de reCAPTCHA
   const captchaValid = await verificarCaptcha(captchaToken);
 
   if (!captchaValid) {
@@ -64,7 +62,6 @@ app.post("/contacto", async (req, res) => {
   }
 });
 
-// Otros endpoints existentes
 app.get("/partidos", async (req, res) => {
   try {
     const partidos = await verPartidos();
