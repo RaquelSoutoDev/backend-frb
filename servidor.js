@@ -18,49 +18,26 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const verificarCaptcha = async (token) => {
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-  const url = `https://www.google.com/recaptcha/api/siteverify`;
-
-  try {
-    const response = await axios.post(url, null, {
-      params: {
-        secret: secretKey,
-        response: token,
-      },
-    });
-
-    return response.data.success; 
-  } catch (error) {
-    console.error("Error al verificar reCAPTCHA:", error);
-    return false;
-  }
-};
 
 app.post("/contacto", async (req, res) => {
-  const { nombre, email, mensaje, captchaToken } = req.body;
-
-  const captchaValid = await verificarCaptcha(captchaToken);
-
-  if (!captchaValid) {
-    return res.status(400).send("Error: Fallo en la verificación de reCAPTCHA.");
-  }
-
-  const mailOptions = {
-    from: email,
-    to: process.env.EMAIL_USER,
-    subject: `Comentario en formulario de ${nombre}`,
-    text: `Mensaje de ${nombre} (${email}):\n\n${mensaje}`,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    res.status(200).send("Correo enviado correctamente");
-  } catch (error) {
-    console.error("Error al enviar el correo:", error);
-    res.status(500).send("Hubo un error al enviar el correo");
-  }
-});
+    const { nombre, email, mensaje } = req.body;
+  
+    const mailOptions = {
+      from: email,
+      to: process.env.EMAIL_USER,
+      subject: `Comentario en formulario de ${nombre}`,
+      text: `Mensaje de ${nombre} (${email}):\n\n${mensaje}`,
+    };
+  
+    try {
+      await transporter.sendMail(mailOptions);
+      res.status(200).send("Correo enviado correctamente");
+    } catch (error) {
+      console.error("Error al enviar el correo:", error);
+      res.status(500).send("Hubo un error al enviar el correo");
+    }
+  });
+  
 
 app.get("/partidos", async (req, res) => {
   try {
